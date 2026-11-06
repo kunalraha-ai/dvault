@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @dvault/web",
-    "build": "npm run build --workspace @dvault/web && npm run build --workspace @dvault/extension",
+    "build": "npm run build --workspace @dvault/web",
     "build:web": "npm run build --workspace @dvault/web",
     "build:extension": "npm run build --workspace @dvault/extension",
     "db:push": "npm run db:push --workspace @dvault/web",
