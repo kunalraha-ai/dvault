@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Meridian Trust Bank — Account Opening (Mock KYC)</title>
+<style>
+  :root { --navy:#070B19; --blue:#2563EB; --border:#E3E8F2; --mist:#F7F9FC; }
+  * { box-sizing:border-box; margin:0; padding:0; font-family:Inter,"Segoe UI",system-ui,sans-serif; }
+  body { background:var(--mist); color:#0F172A; line-height:1.55; }
+  header { background:var(--navy); color:#fff; padding:2rem 1.5rem; }
+  header .wrap { max-width:760px; margin:0 auto; }
+  header h1 { font-size:1.25rem; }
+  header p { color:#94A3B8; font-size:.83rem; margin-top:.3rem; }
+  main { max-width:760px; margin:0 auto; padding:2rem 1.5rem 4rem; }
+  .card { background:#fff; border:1px solid var(--border); border-radius:16px; padding:1.75rem; margin-bottom:1.4rem; box-shadow:0 8px 24px -12px rgba(7,11,25,.10); }
+  h2 { font-size:.88rem; letter-spacing:.06em; text-transform:uppercase; color:#64748B; margin-bottom:1.2rem; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:620px){ .row{ grid-template-columns:1fr; } }
+  label { display:block; font-size:.8rem; font-weight:600; color:#334155; margin-bottom:.35rem; }
+  input[type=text], input[type=email], input[type=tel], input[type=date], input[type=number], select, textarea {
+    width:100%; border:1px solid var(--border); border-radius:10px; padding:.62rem .75rem; font-size:.9rem;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+  .radios { display:flex; gap:1.1rem; padding:.3rem 0; flex-wrap:wrap; }
+  .radios label { display:flex; align-items:center; gap:.45rem; font-size:.88rem; font-weight:500; }
+  .sensitive-note { font-size:.72rem; color:#94A3B8; margin-top:.3rem; }
+  .submit-btn { background:var(--blue); color:#fff; border:0; border-radius:12px; padding:.85rem 2rem; font-size:.95rem; font-weight:700; cursor:pointer; }
+  .note { font-size:.75rem; color:#94A3B8; margin-top:1rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Meridian Trust Bank — Savings Account Opening (Full KYC)</h1>
+    <p>Mock website served by D-Vault for testing autofill of personal identity fields · fictional bank, fictional domain (meridian.example.test)</p>
+  </div>
+</header>
+<main>
+  <form id="kyc-form" autocomplete="off">
+    <section class="card">
+      <h2>Applicant details</h2>
+      <div class="row">
+        <div><label for="full-name">Applicant full name (as per Aadhaar) *</label><input type="text" id="full-name" name="applicant_name" required /></div>
+        <div><label for="dob">Date of birth *</label><input type="date" id="dob" name="dob" required /></div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div><label for="father-name">Father's name *</label><input type="text" id="father-name" name="father_name" required /></div>
+        <div><label for="mother-name">Mother's name</label><input type="text" id="mother-name" name="mother_name" /></div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div><label for="gender">Gender</label>
+          <select id="gender" name="gender"><option value="">Select…</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select>
+        </div>
+        <div><label for="marital">Marital status</label>
+          <div class="radios" id="marital" role="radiogroup" aria-label="Marital status">
+            <label><input type="radio" name="marital_status" value="Single" /> Single</label>
+            <label><input type="radio" name="marital_status" value="Married" /> Married</label>
+            <label><input type="radio" name="marital_status" value="Other" /> Other</label>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div><label for="nationality">Nationality</label><input type="text" id="nationality" name="nationality" placeholder="Indian" /></div>
+        <div><label for="occupation">Occupation</label>
+          <select id="occupation" name="occupation"><option value="">Select…</option><option>Salaried</option><option>Self-employed / Business</option><option>Student</option><option>Retired</option><option>Homemaker</option></select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Identity documents</h2>
+      <div class="row">
+        <div><label for="aadhaar">Aadhaar number</label><input type="text" id="aadhaar" name="aadhaar_number" placeholder="XXXX XXXX XXXX" inputmode="numeric" />
+          <p class="sensitive-note">Sensitive — D shows it masked in the review panel and never reads it aloud.</p></div>
+        <div><label for="pan">PAN number</label><input type="text" id="pan" name="pan_number" placeholder="ABCDE1234F" /></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Contact and address</h2>
+      <div class="row">
+        <div><label for="email">Email address *</label><input type="email" id="email" name="email" required /></div>
+        <div><label for="mobile">Mobile number *</label><input type="tel" id="mobile" name="mobile_number" required placeholder="+91 90000 00000" /></div>
+      </div>
+      <div style="margin-top:1rem"><label for="residential-address">Residential address *</label><textarea id="residential-address" name="residential_address" required></textarea></div>
+      <div class="row" style="margin-top:1rem">
+        <div><label for="city">City</label><input type="text" id="city" name="city" /></div>
+        <div><label for="state">State</label><input type="text" id="state" name="state" /></div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div><label for="pincode">PIN code</label><input type="text" id="pincode" name="pin_code" inputmode="numeric" /></div>
+        <div><label for="country">Country</label><input type="text" id="country" name="country" /></div>
+      </div>
+    </section>
+
+    <div><button type="submit" class="submit-btn" id="kyc-submit">Submit KYC</button></div>
+    <p class="note">Mock page — submitting simply demonstrates the flow. OTP entry (if any bank asks for one) is always manual and never stored.</p>
+  </form>
+</main>
+<script>
+  document.getElementById("kyc-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    alert("Mock submission complete. In the real D-Vault demo, say “D, save this application” to remember it.");
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>D-Vault</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+    body { width: 320px; background: #060B1B; color: #e2e8f0; padding: 16px 14px 18px; }
+    .logo { display: flex; align-items: center; gap: 9px; margin-bottom: 4px; }
+    .logo svg { flex-shrink: 0; }
+    .logo b { font-size: 15px; letter-spacing: 0.02em; color: #fff; }
+    .sub { font-size: 11px; color: #64748b; margin-bottom: 14px; line-height: 1.45; }
+    label { display: block; font-size: 11px; font-weight: 600; color: #b5cdff; margin: 10px 0 4px; }
+    input { width: 100%; background: #091025; border: 1px solid #233463; border-radius: 9px; color: #fff; font-size: 12.5px; padding: 8px 10px; }
+    input:focus { outline: none; border-color: #5291ff; }
+    button { width: 100%; margin-top: 14px; background: #2e6efa; color: #fff; border: 0; border-radius: 10px; padding: 9px; font-size: 13px; font-weight: 700; cursor: pointer; }
+    button:hover { background: #5291ff; }
+    button:disabled { opacity: 0.5; cursor: default; }
+    .status { margin-top: 12px; font-size: 11.5px; line-height: 1.5; border-radius: 9px; padding: 9px 11px; }
+    .status.ok { background: rgba(16,185,129,.12); color: #6ee7b7; border: 1px solid rgba(16,185,129,.25); }
+    .status.err { background: rgba(239,68,68,.1); color: #fca5a5; border: 1px solid rgba(239,68,68,.25); }
+    .status.note { background: rgba(147,197,253,.08); color: #b5cdff; border: 1px solid rgba(147,197,253,.18); }
+    .paired { display: none; }
+    .paired .row { display: flex; justify-content: space-between; font-size: 11.5px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .paired .row span:first-child { color: #64748b; }
+    .paired .row span:last-child { font-weight: 600; color: #e2e8f0; }
+    .unpair { background: transparent; border: 1px solid rgba(248,113,113,.3); color: #fca5a5; }
+    .unpair:hover { background: rgba(248,113,113,.08); }
+    .hint { margin-top: 10px; font-size: 10.5px; color: #475569; line-height: 1.5; }
+    .activate { background: #2e6efa; }
+    .footer-note { margin-top: 12px; font-size: 10px; color: #475569; text-align: center; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <svg width="30" height="30" viewBox="0 0 64 64"><circle cx="32" cy="32" r="30" fill="#091025" stroke="rgba(147,197,253,.3)"/><text x="32" y="39" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="27" fill="#fff">D</text><rect x="17" y="41" width="30" height="1.8" rx=".9" fill="#3B82F6"/><rect x="21" y="44" width="22" height="1.8" rx=".9" fill="#2563EB" opacity=".85"/><rect x="26" y="47" width="12" height="1.8" rx=".9" fill="#93C5FD" opacity=".7"/><circle cx="44.5" cy="42" r="1.1" fill="#FA6EAB"/></svg>
+    <b>D-VAULT</b>
+  </div>
+  <p class="sub">Voice form copilot. Click the D icon on any form page to activate — nothing is inspected before you do.</p>
+
+  <div id="pair-view">
+    <label for="server">D-Vault server URL</label>
+    <input id="server" type="url" value="http://localhost:3000" placeholder="http://localhost:3000" />
+    <button id="pair">Connect this browser</button>
+    <div id="pair-status" class="status" style="display:none"></div>
+    <p class="hint">
+      No account needed — pairing registers a revocable device identity and receives the
+      instance key so your vault values stay decrypted only on this device.
+    </p>
+  </div>
+
+  <div id="paired-view" class="paired">
+    <div class="row"><span>Vault</span><span id="p-email"></span></div>
+    <div class="row"><span>Server</span><span id="p-server"></span></div>
+    <div class="row"><span>Profiles</span><span id="p-profiles"></span></div>
+    <button id="activate" class="activate">Activate D on the current tab</button>
+    <button id="unpair" class="unpair">Unpair this browser</button>
+    <p class="footer-note">No account. No login.<br />activeTab + scripting only. No browsing history. No background scanning. Manual OTP. You press Submit.</p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

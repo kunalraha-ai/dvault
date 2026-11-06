@@ -1,0 +1,233 @@
+@import "tailwindcss";
+
+/* ============================================================
+   D-Vault design system
+   Midnight navy + electric blue core, luminous white structure,
+   restrained pink accents. Signature visual: the striped
+   bell-curve (see components/brand/DVaultWave.tsx).
+   ============================================================ */
+
+@theme {
+  /* Ink (midnight navy) scale — from the D-Vault landing design */
+  --color-ink-950: #060b1b;
+  --color-ink-900: #091025;
+  --color-ink-850: #090f21;
+  --color-ink-800: #0a1229;
+  --color-ink-700: #131f3b;
+  --color-ink-600: #142140;
+
+  /* Hairline / border on dark */
+  --color-line-500: #405c94;
+
+  /* Blue accents — design primary #2E6EFA, echo #5291FF */
+  --color-electric-600: #2e6efa;
+  --color-bright-500: #2e6efa;
+  --color-sky-400: #5291ff;
+  --color-ice-300: #b5cdff;
+  --color-ice-200: #d6e4ff;
+
+  /* Pink accent (used sparingly) — design #FA6EAB */
+  --color-blush-300: #fa6eab;
+  --color-blush-400: #e85d97;
+
+  /* Light surfaces — design light section is #F0F5FF */
+  --color-mist-50: #f0f5ff;
+  --color-mist-100: #e8f2ff;
+  --color-mist-200: #dce7f5;
+  --color-mist-300: #c9d7ee;
+
+  /* Muted text on dark — design #9CABC9 */
+  --color-mist-400: #9cabc9;
+
+  /* Fonts */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif, sans-serif;
+
+  --shadow-soft: 0 1px 2px rgba(7, 11, 25, 0.05), 0 8px 24px -12px rgba(7, 11, 25, 0.12);
+  --shadow-lift: 0 2px 4px rgba(7, 11, 25, 0.06), 0 18px 44px -16px rgba(7, 11, 25, 0.18);
+  --shadow-glow-blue: 0 0 42px -6px rgba(37, 99, 235, 0.35);
+  --shadow-inner-wave: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- base ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-mist-50 text-ink-900 antialiased;
+  font-feature-settings: "cv11", "ss01";
+  text-rendering: optimizeLegibility;
+}
+
+.dark-surface {
+  @apply bg-ink-900 text-ice-200;
+}
+
+::selection {
+  background: rgba(59, 130, 246, 0.28);
+  color: #fff;
+}
+
+/* ---------- focus ---------- */
+:focus-visible {
+  outline: 2px solid var(--color-bright-500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ---------- typography helpers ---------- */
+.display-1 {
+  font-family: var(--font-display);
+  @apply tracking-tight;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+.display-2 {
+  font-family: var(--font-display);
+  @apply tracking-tight;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* ---------- DVaultWave animations ---------- */
+@keyframes wave-breathe {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.025); }
+}
+@keyframes wave-shimmer {
+  0% { transform: translateY(-30%); opacity: 0; }
+  12% { opacity: 0.5; }
+  88% { opacity: 0.5; }
+  100% { transform: translateY(430%); opacity: 0; }
+}
+@keyframes wave-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+@keyframes mic-bar {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+.wave-stripe {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wave-breathe 7s ease-in-out infinite;
+}
+.wave-shimmer-bar {
+  animation: wave-shimmer 9s ease-in-out infinite;
+}
+.float-slow {
+  animation: wave-float 6s ease-in-out infinite;
+}
+.rise-in {
+  animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fade-in {
+  animation: fade-in 0.9s ease both;
+}
+.mic-bar {
+  animation: mic-bar 1s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.pulse-ring {
+  animation: pulse-ring 1.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ---------- GiantBellCurve field animations ---------- */
+/* gentle horizontal drift for the two curve groups (opposed phases) */
+@keyframes dv-drift-a {
+  from { transform: translateX(-12px); }
+  to { transform: translateX(12px); }
+}
+@keyframes dv-drift-b {
+  from { transform: translateX(14px); }
+  to { transform: translateX(-14px); }
+}
+/* very subtle stripe brightness breathing; each stripe's base opacity is
+   carried by the --o custom property so the wave of brightness flows
+   through the whole field via staggered animation-delay */
+@keyframes dv-opx {
+  0%, 100% { opacity: var(--o, 0.8); }
+  50% { opacity: calc(var(--o, 0.8) * 0.66); }
+}
+@keyframes dv-breathe {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(1.006); }
+}
+@keyframes dv-scrollhint {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+.dv-stripe {
+  animation: dv-opx 9s ease-in-out infinite;
+}
+.dv-drift-a {
+  animation: dv-drift-a 17s ease-in-out infinite alternate;
+}
+.dv-drift-b {
+  animation: dv-drift-b 21s ease-in-out infinite alternate;
+}
+.dv-breathe {
+  animation: dv-breathe 13s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.dv-scrollhint {
+  animation: dv-scrollhint 2.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-stripe, .wave-shimmer-bar, .float-slow, .rise-in, .fade-in, .mic-bar, .pulse-ring {
+    animation: none !important;
+  }
+  .dv-stripe, .dv-drift-a, .dv-drift-b, .dv-breathe, .dv-scrollhint {
+    animation: none !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* ---------- scrollbar ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.45); background-clip: content-box; border: 2px solid transparent; }
+
+.dark-surface ::-webkit-scrollbar-thumb {
+  background: rgba(147, 197, 253, 0.2);
+  background-clip: content-box;
+  border: 2px solid transparent;
+}

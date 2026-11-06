@@ -1,0 +1,15 @@
+{
+  "name": "@dvault/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared domain logic: vault field catalog, semantic form-field mapping, intent engine, client-side crypto, WAV encoding. Used by the web app and the Chrome extension.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

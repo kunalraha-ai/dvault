@@ -1,0 +1,29 @@
+{
+  "name": "dvault",
+  "private": true,
+  "version": "0.1.0",
+  "description": "D-Vault — Voice-first personal information vault and universal form-filling copilot",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @dvault/web",
+    "build": "npm run build --workspace @dvault/web && npm run build --workspace @dvault/extension",
+    "build:web": "npm run build --workspace @dvault/web",
+    "build:extension": "npm run build --workspace @dvault/extension",
+    "db:push": "npm run db:push --workspace @dvault/web",
+    "db:studio": "npm run db:studio --workspace @dvault/web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "node scripts/smoke-test.mjs",
+    "verify:wave": "node scripts/verify-wave.mjs",
+    "setup": "npm install && npm run db:push && npm run build:extension"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

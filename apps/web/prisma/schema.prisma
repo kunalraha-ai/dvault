@@ -1,0 +1,237 @@
+// D-Vault database schema.
+//
+// Portable between local development (SQLite — zero-setup, runs anywhere)
+// and production (Supabase PostgreSQL). To switch to Supabase PostgreSQL:
+//   1. Change provider below to "postgresql"
+//   2. Set DATABASE_URL to your Supabase Postgres connection string:
+//      postgresql://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+//   3. Run `npx prisma db push`
+//
+// The schema avoids SQLite-only features (no enums, JSON as strings) so it
+// works on both backends without changes.
+//
+// Design notes:
+// - UUID identifiers everywhere (String + uuid() for portability).
+// - Sensitive values (vault fields, extracted text, reference IDs, attachment
+//   blobs) are stored ONLY as AES-GCM envelopes encrypted client-side; the
+//   server stores {ciphertext, iv} and cannot decrypt them.
+// - Every user-owned row is queried through ownership checks in the API layer.
+// - Enums are kept as strings with documented allowed values so the same
+//   schema runs on SQLite and PostgreSQL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String   @default("Local user")
+  // User-provided email — identifies the vault owner across sessions
+  email       String?
+  // AES-256-GCM instance key (JWK JSON), generated once. D-Vault runs in
+  // no-account local mode: values are still encrypted client-side and the
+  // server stores only ciphertext — but it holds the instance key, so this
+  // mode protects storage, not against the server itself (documented in
+  // docs/SECURITY.md).
+  vaultKeyJwk String
+  demoLoaded  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  profiles      Profile[]
+  appSettings   AppSetting[]
+  devices       ConnectedDevice[]
+  applications  Application[]
+  documents     Document[]
+  consentEvents ConsentEvent[]
+  syncMetadata  SyncMetadata[]
+}
+
+model Profile {
+  id          String   @id @default(uuid())
+  userId      String
+  profileType String // "personal" | "business"
+  profileName String
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fields      VaultField[]
+  documents   Document[]
+  applications Application[]
+
+  @@index([userId, profileType])
+}
+
+model VaultField {
+  id               String    @id @default(uuid())
+  profileId        String
+  fieldKey         String
+  // AES-GCM envelope of the plaintext value — encrypted on the user's device.
+  encryptedValue   String // JSON CipherEnvelope { c, iv }
+  category        String
+  isSensitive     Boolean   @default(false)
+  verified        Boolean   @default(false)
+  sourceDocumentId String?
+  sourceDocument  Document? @relation("DocumentSourceFields", fields: [sourceDocumentId], references: [id], onDelete: SetNull)
+  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime  @default(now())
+  profile          Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, fieldKey])
+  @@index([profileId, category])
+}
+
+model Document {
+  id                String   @id @default(uuid())
+  userId            String
+  profileId         String
+  filename          String
+  // Server-side opaque storage key for the client-encrypted blob.
+  encryptedStorageKey String  @unique
+  fileType          String
+  fileSize          Int
+  category          String   @default("other")
+  // "pending" | "processing" | "extracted" | "failed" | "skipped"
+  extractionStatus  String   @default("pending")
+  createdAt         DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile           Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  extractions DocumentExtraction[]
+  sourceFields VaultField[] @relation("DocumentSourceFields")
+
+  @@index([userId])
+  @@index([profileId])
+}
+
+model DocumentExtraction {
+  id          String    @id @default(uuid())
+  documentId  String
+  // AES-GCM envelope of the OCR/extracted raw text (client-encrypted).
+  encryptedText String
+  // AES-GCM envelope of the JSON array of candidate fields
+  // [{ fieldKey, value, confidence, evidence }...] (client-encrypted).
+  encryptedFields String
+  status     String    @default("pending") // "pending" | "reviewed"
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
+  document   Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}
+
+model Application {
+  id                  String    @id @default(uuid())
+  userId              String
+  profileId           String?
+  applicationName     String
+  websiteDomain       String
+  // AES-GCM envelope of the reference/acknowledgement ID (client-encrypted).
+  encryptedReferenceId String?
+  applicationUrl      String
+  submissionDate      DateTime?
+  // "draft" | "submitted" | "pending" | "approved" | "rejected" | "unknown"
+  status              String    @default("unknown")
+  // AES-GCM envelope of free-form notes (client-encrypted).
+  encryptedNotes      String?
+  isDemo              Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile             Profile?  @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  attachments    ApplicationAttachment[]
+  statusHistory  ApplicationStatusHistory[]
+
+  @@index([userId, status])
+  @@index([userId, submissionDate])
+}
+
+model ApplicationAttachment {
+  id            String   @id @default(uuid())
+  applicationId String
+  // "screenshot" | "receipt" | "document"
+  attachmentType String
+  filename      String
+  encryptedStorageKey String @unique
+  fileSize      Int
+  createdAt     DateTime @default(now())
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model ApplicationStatusHistory {
+  id            String   @id @default(uuid())
+  applicationId String
+  status        String
+  note          String?
+  changedAt     DateTime @default(now())
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+}
+
+model ConsentEvent {
+  id            String   @id @default(uuid())
+  userId        String
+  // e.g. "autofill_approved", "form_inspected", "application_saved",
+  // "screenshot_captured", "ocr_saved"
+  action        String
+  websiteDomain String?
+  details       String?
+  grantedAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, grantedAt])
+}
+
+model ConnectedDevice {
+  id            String    @id @default(uuid())
+  userId        String
+  deviceName    String
+  deviceType    String    @default("chrome-extension")
+  tokenHash     String    @unique
+  lastSeenAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  syncMetadata  SyncMetadata[]
+
+  @@index([userId])
+}
+
+model SyncMetadata {
+  id           String   @id @default(uuid())
+  userId       String
+  deviceId     String?
+  lastSyncedAt DateTime @default(now())
+  // "ok" | "error" | "pending"
+  syncStatus   String   @default("ok")
+  detail       String?
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device       ConnectedDevice? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+
+  @@index([userId, lastSyncedAt])
+}
+
+model AppSetting {
+  id        String   @id @default(uuid())
+  userId    String
+  key       String
+  value     String
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, key])
+  @@index([userId])
+}

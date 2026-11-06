@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Application submitted — Bharat Innovate (Mock confirmation)</title>
+<style>
+  :root { --navy:#070B19; --blue:#2563EB; --ice:#93C5FD; --mist:#F7F9FC; --border:#E3E8F2; }
+  * { box-sizing:border-box; margin:0; padding:0; font-family:Inter,"Segoe UI",system-ui,sans-serif; }
+  body { background:var(--mist); color:#0F172A; line-height:1.55; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem 1.25rem; }
+  .card { max-width:560px; width:100%; background:#fff; border:1px solid var(--border); border-radius:20px; overflow:hidden; box-shadow:0 18px 44px -16px rgba(7,11,25,.18); }
+  .hero { background:linear-gradient(180deg,#04060F,#0B1224); padding:2.5rem 2rem; text-align:center; }
+  .hero .mark { width:54px; height:54px; margin:0 auto 1rem; border-radius:50%; background:var(--navy); border:1px solid rgba(147,197,253,.35); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:22px; position:relative; }
+  .hero .mark::after { content:""; position:absolute; bottom:9px; left:50%; transform:translateX(-50%); width:26px; height:2px; border-radius:2px; background:var(--blue); box-shadow:0 4px 0 -1px var(--ice); }
+  .hero h1 { color:#fff; font-size:1.3rem; letter-spacing:-.01em; }
+  .hero p { color:#94A3B8; font-size:.85rem; margin-top:.4rem; }
+  .body { padding:2rem; }
+  .ref-box { border:1px dashed #C7D2FE; background:#EEF2FF; border-radius:14px; padding:1.1rem 1.25rem; text-align:center; }
+  .ref-box .label { font-size:.68rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#4338CA; }
+  .ref-box .value { margin-top:.35rem; font-size:1.35rem; font-weight:800; letter-spacing:.04em; color:#312E81; font-variant-numeric:tabular-nums; }
+  .row { display:flex; justify-content:space-between; font-size:.85rem; padding:.55rem 0; border-bottom:1px solid var(--mist); }
+  .row span:first-child { color:#64748B; }
+  .row span:last-child { font-weight:600; }
+  .note { margin-top:1.25rem; font-size:.78rem; color:#94A3B8; }
+  .cta { display:block; width:100%; text-align:center; margin-top:1.5rem; background:var(--blue); color:#fff; border:0; border-radius:12px; padding:.85rem; font-weight:700; cursor:pointer; font-size:.95rem; text-decoration:none; }
+  .cta:hover { background:#1D4ED8; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="hero">
+      <div class="mark">✓</div>
+      <h1>Application submitted</h1>
+      <p>Your Bharat Innovate Startup Grant application has been received. (Fictional programme.)</p>
+    </div>
+    <div class="body">
+      <div class="ref-box">
+        <div class="label">Acknowledgement / Reference number</div>
+        <div class="value" id="ref-value">BIG-2026-00000</div>
+      </div>
+      <div style="margin-top:1.25rem">
+        <div class="row"><span>Submitted on</span><span id="today">—</span></div>
+        <div class="row"><span>Programme</span><span>Bharat Innovate Startup Grant</span></div>
+        <div class="row"><span>Status</span><span>Under review</span></div>
+        <div class="row"><span>Expected decision</span><span>Within 4 weeks</span></div>
+      </div>
+      <p class="note">
+        This is a mock confirmation page served by D-Vault for testing the extension. Try it now:
+        click the D button, then say <strong>“D, save this application.”</strong> — D captures this
+        reference number, the URL and (with your consent) a screenshot into your application memory.
+      </p>
+      <a class="cta" href="grant-application.html">← Back to the mock form</a>
+    </div>
+  </div>
+<script>
+  var ref = new URLSearchParams(window.location.search).get("ref") || "BIG-2026-88421 (fictional)";
+  document.getElementById("ref-value").textContent = ref;
+  document.getElementById("today").textContent = new Date().toLocaleDateString(undefined, { year:"numeric", month:"long", day:"numeric" });
+</script>
+</body>
+</html>

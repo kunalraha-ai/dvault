@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bharat Innovate Startup Grant — Application (Mock site)</title>
+<style>
+  :root { --navy:#070B19; --blue:#2563EB; --ice:#93C5FD; --mist:#F7F9FC; --border:#E3E8F2; }
+  * { box-sizing:border-box; margin:0; padding:0; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+  body { background:var(--mist); color:#0F172A; line-height:1.55; }
+  header { background:var(--navy); color:#fff; padding:2.2rem 1.5rem; }
+  header .wrap { max-width:820px; margin:0 auto; }
+  header h1 { font-size:1.35rem; letter-spacing:-.02em; }
+  header p { color:#B9C4E0; font-size:.85rem; margin-top:.35rem; }
+  .badge { display:inline-block; margin-top:.9rem; background:rgba(147,197,253,.15); color:var(--ice); border:1px solid rgba(147,197,253,.3); border-radius:999px; font-size:.68rem; font-weight:700; letter-spacing:.14em; padding:.25rem .7rem; text-transform:uppercase; }
+  main { max-width:820px; margin:0 auto; padding:2rem 1.5rem 4rem; }
+  .card { background:#fff; border:1px solid var(--border); border-radius:16px; padding:1.75rem; margin-bottom:1.5rem; box-shadow:0 1px 2px rgba(7,11,25,.04), 0 8px 24px -12px rgba(7,11,25,.10); }
+  h2 { font-size:.95rem; letter-spacing:.06em; text-transform:uppercase; color:#64748B; margin-bottom:1.25rem; }
+  .row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:640px){ .row{ grid-template-columns:1fr; } }
+  label { display:block; font-size:.8rem; font-weight:600; color:#334155; margin-bottom:.35rem; }
+  label .req { color:#DC2626; }
+  input[type=text], input[type=email], input[type=url], input[type=number], input[type=tel], input[type=date], select, textarea {
+    width:100%; border:1px solid var(--border); border-radius:10px; padding:.62rem .75rem; font-size:.9rem; background:#fff; color:#0F172A; transition:border-color .15s;
+  }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--blue); box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+  textarea { min-height:84px; resize:vertical; }
+  .hint { font-size:.72rem; color:#94A3B8; margin-top:.3rem; }
+  .radios, .checks { display:flex; gap:1.25rem; flex-wrap:wrap; padding:.3rem 0; }
+  .radios label, .checks label { display:flex; align-items:center; gap:.5rem; font-weight:500; font-size:.88rem; }
+  /* deliberately custom widget D-Vault should mark unsupported */
+  .custom-widget { border:1px dashed #CBD5E1; border-radius:10px; padding:.65rem .75rem; font-size:.9rem; color:#64748B; background:#F8FAFC; min-height:40px; }
+  .custom-widget:focus { outline:1px dashed #94A3B8; }
+  .stripe-note { display:flex; gap:.6rem; align-items:flex-start; background:#EEF2FF; border:1px solid #C7D2FE; border-radius:12px; padding:.9rem 1rem; font-size:.78rem; color:#3730A3; margin-top:1.25rem; }
+  footer-actions { display:flex; justify-content:flex-end; }
+  .submit-btn { background:var(--blue); color:#fff; border:0; border-radius:12px; padding:.85rem 2rem; font-size:.95rem; font-weight:700; cursor:pointer; }
+  .submit-btn:hover { background:#1D4ED8; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="badge">Mock website · for testing D-Vault</span>
+    <h1>Bharat Innovate Startup Grant — Application Form</h1>
+    <p>₹25 lakh grant for early-stage SaaS and workflow-automation startups · Fictional programme, fictional domain (bharat-innovate.example.test)</p>
+  </div>
+</header>
+
+<main>
+  <form id="grant-form" autocomplete="off">
+    <section class="card">
+      <h2>Company information</h2>
+      <div class="row">
+        <div>
+          <label for="company-name">Registered company name <span class="req">*</span></label>
+          <input type="text" id="company-name" name="company_name" required placeholder="NovaStack Technologies Pvt Ltd" />
+        </div>
+        <div>
+          <label for="brand-name">Brand name</label>
+          <input type="text" id="brand-name" name="brand_name" placeholder="NovaStack" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div>
+          <label for="company-website">Company website <span class="req">*</span></label>
+          <input type="url" id="company-website" name="company_website" required placeholder="https://example.test" />
+        </div>
+        <div>
+          <label for="company-email">Company email address <span class="req">*</span></label>
+          <input type="email" id="company-email" name="company_email" required placeholder="hello@company.example.test" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div>
+          <label for="company-phone">Company phone number</label>
+          <input type="tel" id="company-phone" name="company_phone" placeholder="+91 90000 00001" />
+        </div>
+        <div>
+          <label for="incorporation-date">Date of incorporation <span class="req">*</span></label>
+          <input type="date" id="incorporation-date" name="incorporation_date" required />
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div>
+          <label for="company-type">Type of company</label>
+          <select id="company-type" name="company_type">
+            <option value="">Select…</option>
+            <option>Private Limited</option>
+            <option>Limited Liability Partnership</option>
+            <option>Partnership</option>
+            <option>Sole proprietorship</option>
+            <option>Public Limited</option>
+          </select>
+        </div>
+        <div>
+          <label for="gstin">GSTIN (if registered)</label>
+          <input type="text" id="gstin" name="gstin" placeholder="27XXXXX1234X1Z5" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div>
+          <label for="registration-number">Registration number (CIN/LLPIN)</label>
+          <input type="text" id="registration-number" name="registration_number" placeholder="U72999PN2024PTC123456" />
+        </div>
+        <div>
+          <label for="industry">Industry sector</label>
+          <select id="industry" name="industry">
+            <option value="">Select…</option>
+            <option>SaaS</option>
+            <option>Fintech</option>
+            <option>Healthtech</option>
+            <option>Manufacturing</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:1rem">
+        <label for="registered-office">Registered office address <span class="req">*</span></label>
+        <textarea id="registered-office" name="registered_office" required placeholder="Level 3, Creaticity Tower, Pune…"></textarea>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Founder details</h2>
+      <div class="row">
+        <div>
+          <label for="founder-name">Founder name <span class="req">*</span></label>
+          <input type="text" id="founder-name" name="founder_name" required placeholder="Aarav Mehta" />
+        </div>
+        <div>
+          <label for="founder-linkedin">Founder LinkedIn profile</label>
+          <input type="url" id="founder-linkedin" name="founder_linkedin" placeholder="https://www.linkedin.com/in/…" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div>
+          <label for="founder-email">Founder email</label>
+          <input type="email" id="founder-email" name="founder_email" placeholder="founder@company.example.test" />
+        </div>
+        <div>
+          <label for="founder-phone">Founder phone</label>
+          <input type="tel" id="founder-phone" name="founder_phone" placeholder="+91 90000 00000" />
+        </div>
+      </div>
+      <div style="margin-top:1rem">
+        <label for="founder-bio">Tell us about the founder</label>
+        <textarea id="founder-bio" name="founder_bio" placeholder="Background, education, why you're building this…"></textarea>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Product and traction</h2>
+      <div style="margin-bottom:1rem">
+        <label for="product-name">Product name <span class="req">*</span></label>
+        <input type="text" id="product-name" name="product_name" required />
+      </div>
+      <div style="margin-bottom:1rem">
+        <label for="product-description">Describe your product <span class="req">*</span></label>
+        <textarea id="product-description" name="product_description" required placeholder="What does your product do?"></textarea>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label for="problem">What problem are you solving? <span class="req">*</span></label>
+        <textarea id="problem" name="problem" required></textarea>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label for="solution">Describe your solution</label>
+        <textarea id="solution" name="solution"></textarea>
+      </div>
+      <div class="row">
+        <div>
+          <label for="target-market">Target market</label>
+          <input type="text" id="target-market" name="target_market" placeholder="Indian SMEs in manufacturing" />
+        </div>
+        <div>
+          <label for="funding-stage">Current funding stage</label>
+          <div class="radios" id="funding-stage" role="radiogroup" aria-label="Current funding stage">
+            <label><input type="radio" name="funding_stage" value="Idea" /> Idea</label>
+            <label><input type="radio" name="funding_stage" value="Pre-seed" /> Pre-seed</label>
+            <label><input type="radio" name="funding_stage" value="Seed" /> Seed</label>
+            <label><input type="radio" name="funding_stage" value="Series A" /> Series A</label>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div>
+          <label for="team-size">Team size (number of employees) <span class="req">*</span></label>
+          <input type="number" id="team-size" name="team_size" min="1" required placeholder="5" />
+        </div>
+        <div>
+          <label for="customer-count">Number of customers</label>
+          <input type="number" id="customer-count" name="customer_count" min="0" placeholder="14" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:1rem">
+        <div>
+          <label for="mrr">Monthly recurring revenue (₹)</label>
+          <input type="number" id="mrr" name="mrr" min="0" placeholder="180000" />
+        </div>
+        <div>
+          <label for="arr">Annual recurring revenue (₹)</label>
+          <input type="number" id="arr" name="arr" min="0" placeholder="2160000" />
+        </div>
+      </div>
+      <div style="margin-top:1rem">
+        <label for="pitch-deck">Link to your pitch deck</label>
+        <input type="url" id="pitch-deck" name="pitch_deck" placeholder="https://…" />
+        <p class="hint">Or upload the file in the next section.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Uploads and declarations</h2>
+      <div style="margin-bottom:1rem">
+        <label for="pitch-deck-file">Upload pitch deck (PDF)</label>
+        <input type="file" id="pitch-deck-file" name="pitch_deck_file" accept=".pdf" />
+        <p class="hint">File inputs are unsupported by D's autofill — you choose files yourself.</p>
+      </div>
+      <div style="margin-bottom:1rem">
+        <label for="custom-signature">Signature (custom canvas widget)</label>
+        <div id="custom-signature" class="custom-widget" contenteditable="true" role="textbox" aria-label="Signature — custom widget">Type your signature here…</div>
+        <p class="hint">A non-standard widget on purpose — D marks it “unsupported” instead of guessing.</p>
+      </div>
+      <div class="checks">
+        <label><input type="checkbox" name="terms" id="terms" required /> I confirm the information is accurate and I accept the fictional grant terms.</label>
+        <label><input type="checkbox" name="updates" id="updates" /> Send me programme updates.</label>
+      </div>
+      <div class="stripe-note">
+        <span>⚡</span>
+        <span><strong>Note:</strong> this is a mock website served by D-Vault itself, for testing the Chrome extension end-to-end. Any submission shows a fictional reference number — nothing is sent anywhere.</span>
+      </div>
+    </section>
+
+    <div style="display:flex; justify-content:flex-end; gap:.8rem;">
+      <button type="submit" class="submit-btn" id="submit-btn">Submit application</button>
+    </div>
+  </form>
+</main>
+
+<script>
+  document.getElementById("grant-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    // Demonstration only: compute a fictional reference and open the mock confirmation page.
+    var required = ["company-name", "company-website", "company-email", "incorporation-date", "founder-name", "product-name", "product-description", "problem", "team-size"];
+    for (var i = 0; i < required.length; i++) {
+      if (!document.getElementById(required[i]).value) {
+        alert("Please complete all required fields. (Mock site — D-Vault would have helped you fill these.)");
+        return;
+      }
+    }
+    if (!document.getElementById("terms").checked) { alert("Please accept the terms."); return; }
+    var ref = "BIG-2026-" + Math.floor(10000 + Math.random() * 89999);
+    window.location.href = "confirmation.html?ref=" + encodeURIComponent(ref);
+  });
+</script>
+</body>
+</html>
