@@ -8,7 +8,7 @@
  * entirely and reported as unsupported, never collected.
  */
 
-import type { FormFieldMetadata, ExtractedFieldType } from "@dvault/core";
+import type { FormFieldMetadata, ExtractedFieldType } from "./core";
 
 interface ExtractedDomField {
   el: HTMLElement;

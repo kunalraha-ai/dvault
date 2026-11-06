@@ -28,7 +28,7 @@ const common = {
   minify: true,
   legalComments: "none",
   loader: { ".ts": "ts", ".tsx": "tsx" },
-  alias: { "@dvault/core": path.join(coreDir, "index.ts") },
+  alias: { "@dvault/core": path.join(extDir, "src/core/index.ts") },
   define: { "process.env.NODE_ENV": '"production"' },
 };
 

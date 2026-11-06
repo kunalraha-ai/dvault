@@ -18,10 +18,10 @@ import {
   importKeyJwk, decryptString, encryptBytes, encryptString,
   FIELD_MAP, fieldsForProfile, fallbackLocale,
   type FormFieldMetadata, type MappingOutcome, type ParsedIntent, type CipherEnvelope,
-} from "@dvault/core";
+} from "../core";
 import { inspectPage, resolveDomElements } from "../form-inspector";
 import { fillField } from "../autofill";
-import type { AssistantSettings } from "@dvault/core";
+import type { AssistantSettings } from "../core";
 
 // ---------------------------------------------------------------------------
 // chrome.* helpers (content-script context)

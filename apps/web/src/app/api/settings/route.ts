@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { apiError, json, resolveUser, sameOrigin } from "@/lib/api";
+import { apiError, corsJson, json, optionsResponse, resolveUser, sameOrigin } from "@/lib/api";
 import { normalizeAssistantSettings } from "@/lib/core";
 
 export const dynamic = "force-dynamic";
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
     }
   } catch { /* empty or corrupted — start fresh */ }
 
-  return json({
+  return corsJson({
     settings: { ...parsed },
     user: { email: userRow?.email ?? null, name: userRow?.name ?? user.name },
     conversation,
@@ -89,4 +89,8 @@ export async function PUT(req: NextRequest) {
   }
 
   return json({ ok: true });
+}
+
+export async function OPTIONS() {
+  return optionsResponse();
 }
