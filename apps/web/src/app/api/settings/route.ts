@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { apiError, json, resolveUser, sameOrigin } from "@/lib/api";
-import { normalizeAssistantSettings } from "@dvault/core";
+import { normalizeAssistantSettings } from "@/lib/core";
 
 export const dynamic = "force-dynamic";
 

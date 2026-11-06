@@ -3,7 +3,7 @@ import { z } from "zod";
 import { apiError, corsJson, optionsResponse, resolveUser } from "@/lib/api";
 import { gnaniSynthesize, gnaniConfig } from "@/lib/voice/gnani";
 import { rateLimit, limitOrFail } from "@/lib/rate-limit";
-import { ASSISTANT_VOICES, ttsModelForVoice } from "@dvault/core";
+import { ASSISTANT_VOICES, ttsModelForVoice } from "@/lib/core";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;

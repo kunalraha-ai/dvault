@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { apiError, corsJson, optionsResponse, resolveUser } from "@/lib/api";
 import { llmJson, llmStatus } from "@/lib/ai/llm";
 import { rateLimit, limitOrFail } from "@/lib/rate-limit";
-import { FIELD_MAP, FIELDS } from "@dvault/core";
+import { FIELD_MAP, FIELDS } from "@/lib/core";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 45;

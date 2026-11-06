@@ -12,7 +12,7 @@ import { Button, Card, Skeleton, EmptyState, Badge } from "@/components/ui/primi
 import { useToast } from "@/components/ui/toast";
 import { useVaultSession } from "@/lib/client/vault-session";
 import { loadDemoData } from "@/lib/client/demo-data";
-import { FIELDS, fieldsForProfile } from "@dvault/core";
+import { FIELDS, fieldsForProfile } from "@/lib/core";
 
 interface ProfileSummary {
   id: string; profileType: string; profileName: string; fieldCount: number;

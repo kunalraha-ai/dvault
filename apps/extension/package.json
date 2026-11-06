@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@dvault/core": "*",
+    "@dvault/core": "file:../../packages/core",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

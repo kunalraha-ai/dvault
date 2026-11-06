@@ -9,7 +9,7 @@ import {
 import { Button, Card, Badge, Skeleton, EmptyState, Select, Textarea } from "@/components/ui/primitives";
 import { useToast } from "@/components/ui/toast";
 import { useVaultSession } from "@/lib/client/vault-session";
-import { APPLICATION_STATUSES } from "@dvault/core";
+import { APPLICATION_STATUSES } from "@/lib/core";
 
 interface Detail {
   applicationName: string; websiteDomain: string; applicationUrl: string;

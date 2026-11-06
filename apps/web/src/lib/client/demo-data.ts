@@ -10,9 +10,9 @@
  * faking anything.
  */
 
-import { FIELD_MAP } from "@dvault/core";
-import { encryptString } from "@dvault/core";
-import type { CipherEnvelope } from "@dvault/core";
+import { FIELD_MAP } from "@/lib/core";
+import { encryptString } from "@/lib/core";
+import type { CipherEnvelope } from "@/lib/core";
 
 export interface DemoField { key: string; value: string }
 export interface DemoProfileSpec {

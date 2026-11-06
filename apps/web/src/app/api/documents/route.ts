@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { apiError, json, resolveUser, sameOrigin } from "@/lib/api";
 import { putBlob, newStorageKey } from "@/lib/storage";
-import { DOCUMENT_CATEGORIES } from "@dvault/core";
+import { DOCUMENT_CATEGORIES } from "@/lib/core";
 
 const MAX_BYTES = 15 * 1024 * 1024; // 15 MB
 const ALLOWED_EXT = ["pdf", "png", "jpg", "jpeg", "webp", "doc", "docx", "txt", "md"];

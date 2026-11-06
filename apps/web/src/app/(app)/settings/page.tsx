@@ -6,7 +6,7 @@ import { Button, Card, Input, Badge, Select } from "@/components/ui/primitives";
 import { ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useRouter } from "next/navigation";
-import { ASSISTANT_LANGUAGES, ASSISTANT_VOICES } from "@dvault/core";
+import { ASSISTANT_LANGUAGES, ASSISTANT_VOICES } from "@/lib/core";
 import { useAssistantSettings } from "@/lib/client/assistant-settings";
 
 export default function SettingsPage() {

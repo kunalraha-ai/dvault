@@ -12,7 +12,7 @@ import { Button, Badge, Skeleton } from "@/components/ui/primitives";
 import { useToast } from "@/components/ui/toast";
 import { useVaultSession } from "@/lib/client/vault-session";
 import { useAssistantSettings } from "@/lib/client/assistant-settings";
-import { PcmRecorder, parseIntent, stripWakePhrase, EXAMPLE_COMMANDS, FIELD_MAP, fallbackLocale, localizedReply, type ParsedIntent } from "@dvault/core";
+import { PcmRecorder, parseIntent, stripWakePhrase, EXAMPLE_COMMANDS, FIELD_MAP, fallbackLocale, localizedReply, type ParsedIntent } from "@/lib/core";
 
 type AssistantState =
   | "idle" | "listening" | "processing" | "responding"

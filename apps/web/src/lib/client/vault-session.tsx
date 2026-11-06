@@ -6,7 +6,7 @@ import {
 import {
   importKeyJwk, encryptString, decryptString, encryptBytes, decryptBytes,
   type CipherEnvelope,
-} from "@dvault/core";
+} from "@/lib/core";
 import { cacheGet, cachePut } from "./local-cache";
 
 /**

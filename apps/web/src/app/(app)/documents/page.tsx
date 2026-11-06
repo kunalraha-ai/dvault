@@ -11,7 +11,7 @@ import { Modal, ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useVaultSession } from "@/lib/client/vault-session";
 import { extractFromDocument, type ExtractedCandidate } from "@/lib/client/ocr";
-import { FIELD_MAP, DOCUMENT_CATEGORIES, type DocumentCategory } from "@dvault/core";
+import { FIELD_MAP, DOCUMENT_CATEGORIES, type DocumentCategory } from "@/lib/core";
 
 interface DocRow {
   id: string; profileId: string; profileName: string; profileType: string;

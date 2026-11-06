@@ -9,13 +9,13 @@ import {
 import {
   CATEGORIES, CATEGORY_ORDER, fieldsForProfile, fieldsForCategory, FIELD_MAP,
   type VaultCategory, type ProfileType, type FieldDef,
-} from "@dvault/core";
+} from "@/lib/core";
 import { Button, Input, Textarea, Card, Badge, EmptyState, Skeleton, Select } from "@/components/ui/primitives";
 import { ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useVaultSession, reportSync } from "@/lib/client/vault-session";
 import { cachePut } from "@/lib/client/local-cache";
-import type { CipherEnvelope } from "@dvault/core";
+import type { CipherEnvelope } from "@/lib/core";
 
 export interface VaultFieldRow {
   id: string;

@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { apiError, corsJson, optionsResponse, resolveUser } from "@/lib/api";
-import { FIELD_MAP } from "@dvault/core";
+import { FIELD_MAP } from "@/lib/core";
 
 export const dynamic = "force-dynamic";
 

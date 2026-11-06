@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { apiError, json, resolveUser, sameOrigin } from "@/lib/api";
 import { deleteBlob, getBlob } from "@/lib/storage";
-import { DOCUMENT_CATEGORIES } from "@dvault/core";
+import { DOCUMENT_CATEGORIES } from "@/lib/core";
 
 const patchSchema = z.object({
   filename: z.string().min(1).max(200).optional(),

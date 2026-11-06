@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { apiError, corsJson, optionsResponse, resolveUser } from "@/lib/api";
 import { llmJson, llmStatus } from "@/lib/ai/llm";
-import { mapFormField, type FormFieldMetadata } from "@dvault/core";
+import { mapFormField, type FormFieldMetadata } from "@/lib/core";
 import { rateLimit, limitOrFail } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";

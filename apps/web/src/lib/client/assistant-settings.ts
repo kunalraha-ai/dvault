@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { normalizeAssistantSettings, type AssistantSettings, ASSISTANT_SETTINGS_DEFAULTS } from "@dvault/core";
+import { normalizeAssistantSettings, type AssistantSettings, ASSISTANT_SETTINGS_DEFAULTS } from "@/lib/core";
 
 /** Loads + persists the assistant's language / voice / sensitive-speech settings. */
 export function useAssistantSettings() {

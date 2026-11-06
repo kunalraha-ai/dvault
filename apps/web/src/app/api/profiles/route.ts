@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { apiError, json, resolveUser, sameOrigin } from "@/lib/api";
-import { CATEGORIES } from "@dvault/core";
+import { CATEGORIES } from "@/lib/core";
 
 export async function GET(req: NextRequest) {
   const auth = await resolveUser(req);

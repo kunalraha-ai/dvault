@@ -8,7 +8,7 @@ import { Button, Card, Badge, EmptyState, Skeleton } from "@/components/ui/primi
 import { ConfirmDialog } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { useVaultSession } from "@/lib/client/vault-session";
-import { APPLICATION_STATUSES, type ApplicationStatus } from "@dvault/core";
+import { APPLICATION_STATUSES, type ApplicationStatus } from "@/lib/core";
 
 interface AppRow {
   id: string; applicationName: string; websiteDomain: string; applicationUrl: string;

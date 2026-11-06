@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { apiError, json, resolveUser, sameOrigin } from "@/lib/api";
-import { APPLICATION_STATUSES } from "@dvault/core";
+import { APPLICATION_STATUSES } from "@/lib/core";
 
 /** GET: list/search applications. */
 export async function GET(req: NextRequest) {

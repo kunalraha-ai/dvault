@@ -3,7 +3,7 @@ import { z } from "zod";
 import { apiError, corsJson, optionsResponse, resolveUser } from "@/lib/api";
 import { llmJson, llmStatus } from "@/lib/ai/llm";
 import { rateLimit, limitOrFail } from "@/lib/rate-limit";
-import { FIELDS, FIELD_MAP, CATEGORIES } from "@dvault/core";
+import { FIELDS, FIELD_MAP, CATEGORIES } from "@/lib/core";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;

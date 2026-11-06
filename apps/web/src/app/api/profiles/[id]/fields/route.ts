@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { apiError, json, resolveUser, sameOrigin } from "@/lib/api";
-import { FIELD_MAP } from "@dvault/core";
+import { FIELD_MAP } from "@/lib/core";
 
 /** GET: list a profile's vault fields (server returns only ciphertext). */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
