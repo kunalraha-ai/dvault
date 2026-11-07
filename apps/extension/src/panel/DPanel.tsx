@@ -406,8 +406,18 @@ export function DPanel() {
       await rec.start();
       recorderRef.current = rec;
       setState("listening");
-    } catch {
-      say("Microphone blocked on this site. Allow the mic, or type your command below.", undefined, "err");
+    } catch (micErr) {
+      const msg = micErr instanceof Error ? micErr.message : String(micErr);
+      let hint = "Microphone blocked on this site. Allow the mic, or type your command below.";
+      if (msg.includes("Permission denied") || msg.includes("NotAllowedError")) {
+        hint = "Mic permission denied. Click the 🔒 icon in Chrome's address bar → Site settings → allow Microphone, then try again. Or type below.";
+      } else if (msg.includes("NotFoundError") || msg.includes("DevicesNotFoundError")) {
+        hint = "No microphone found. Connect a mic or type your command below.";
+      } else if (msg.includes("AudioContext")) {
+        hint = "Audio system error — try typing your command below.";
+      }
+      say(hint, undefined, "err");
+      console.error("[D-Vault mic]", msg);
       setState("error");
     }
   }

@@ -59,17 +59,23 @@ export function encodeWav(
 }
 
 /**
- * Record mono 16 kHz PCM from the microphone. Must be started by an explicit
+ * Record mono PCM from the microphone. Must be started by an explicit
  * user gesture (D-Vault never records without activation).
+ *
+ * Uses ScriptProcessorNode instead of AudioWorklet because AudioWorklet
+ * blob-URL module loading fails in Chrome extension content scripts
+ * (isolated world). ScriptProcessorNode is deprecated but 100% reliable
+ * in every context including content scripts.
  */
 export class PcmRecorder {
   private ctx: AudioContext | null = null;
   private stream: MediaStream | null = null;
-  private worklet: AudioWorkletNode | null = null;
+  private processor: ScriptProcessorNode | null = null;
   private chunks: Float32Array[] = [];
   private sampleRate = 16000;
 
   async start(): Promise<void> {
+    // 1. Get mic stream (this is the permission-gated step)
     this.stream = await navigator.mediaDevices.getUserMedia({
       audio: {
         channelCount: 1,
@@ -77,39 +83,28 @@ export class PcmRecorder {
         noiseSuppression: true,
       },
     });
+
+    // 2. Create AudioContext (may fall back to native sample rate)
     this.ctx = new AudioContext({ sampleRate: this.sampleRate });
-    // Safari fallback to 48k if the browser ignores the requested rate
     this.sampleRate = this.ctx.sampleRate;
     const src = this.ctx.createMediaStreamSource(this.stream);
 
-    const workletCode = `
-      class RecProcessor extends AudioWorkletProcessor {
-        constructor() { super(); this._frames = []; }
-        process(inputs) {
-          const input = inputs[0];
-          if (input && input[0]) {
-            this.port.postMessage(input[0].slice(0));
-          }
-          return true;
-        }
-      }
-      registerProcessor('rec-processor', RecProcessor);
-    `;
-    const url = URL.createObjectURL(new Blob([workletCode], { type: "text/javascript" }));
-    try {
-      await this.ctx.audioWorklet.addModule(url);
-      this.worklet = new AudioWorkletNode(this.ctx, "rec-processor");
-      this.worklet.port.onmessage = (e: MessageEvent) => {
-        this.chunks.push(new Float32Array(e.data as Float32Array));
-      };
-      src.connect(this.worklet);
-      // Worklet without a destination connection may be suspended in some browsers
-      const sink = this.ctx.createGain();
-      sink.gain.value = 0;
-      this.worklet.connect(sink).connect(this.ctx.destination);
-    } finally {
-      URL.revokeObjectURL(url);
-    }
+    // 3. ScriptProcessorNode — no module loading needed, works in content scripts
+    //    bufferSize=4096 gives ~256ms at 16kHz — fine for voice
+    this.processor = this.ctx.createScriptProcessor(4096, 1, 1);
+    this.processor.onaudioprocess = (e: AudioProcessingEvent) => {
+      const input = e.inputBuffer.getChannelData(0);
+      // copy the data (ScriptProcessor reuses the buffer)
+      this.chunks.push(new Float32Array(input));
+    };
+    src.connect(this.processor);
+
+    // ScriptProcessorNode needs a destination connection to fire events.
+    // Route through a silent gain node so no audio is played back.
+    const sink = this.ctx.createGain();
+    sink.gain.value = 0;
+    this.processor.connect(sink);
+    sink.connect(this.ctx.destination);
   }
 
   async stop(): Promise<Blob | null> {
@@ -124,8 +119,8 @@ export class PcmRecorder {
   }
 
   private cleanup() {
-    try { this.worklet?.disconnect(); } catch { /* noop */ }
-    this.worklet = null;
+    try { this.processor?.disconnect(); } catch { /* noop */ }
+    this.processor = null;
     this.stream?.getTracks().forEach((t) => t.stop());
     this.stream = null;
     this.ctx?.close().catch(() => undefined);
