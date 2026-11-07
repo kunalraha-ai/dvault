@@ -28,13 +28,45 @@ import type { AssistantSettings } from "../core";
 // ---------------------------------------------------------------------------
 
 function sendMsg<T>(msg: unknown): Promise<T> {
-  return new Promise((resolve) => {
-    chrome.runtime.sendMessage(msg, (res: T) => resolve(res));
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.runtime.sendMessage(msg, (res: T) => {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve(res);
+        }
+      });
+    } catch {
+      reject(new Error("Extension was reloaded — refresh this page and try again."));
+    }
   });
 }
 
+/** Efficient base64 encoding — processes in 8KB chunks (not char-by-char). */
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  const chunk = 8192;
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += chunk) {
+    const slice = bytes.subarray(i, Math.min(i + chunk, bytes.length));
+    binary += String.fromCharCode.apply(null, slice as unknown as number[]);
+  }
+  return btoa(binary);
+}
+
 async function apiFetch(path: string, init?: RequestInit): Promise<{ ok: boolean; status: number; body: string }> {
-  return sendMsg({ type: "apiFetch", path, init });
+  try {
+    return await sendMsg({ type: "apiFetch", path, init });
+  } catch (e) {
+    return {
+      ok: false,
+      status: 0,
+      body: e instanceof Error && e.message.includes("reloaded")
+        ? "Extension reloaded — refresh the page"
+        : "Connection error",
+    };
+  }
 }
 
 async function apiJson<T>(path: string, init?: RequestInit): Promise<{ ok: boolean; status: number; data?: T; error?: string }> {
@@ -433,32 +465,34 @@ export function DPanel() {
       return;
     }
 
-    // FormData/Blobs DON'T survive chrome.runtime.sendMessage serialization.
-    // Convert the WAV blob to base64 and send it as a plain string.
-    const arrayBuf = await blob.arrayBuffer();
-    const bytes = new Uint8Array(arrayBuf);
-    let binary = "";
-    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-    const audioBase64 = btoa(binary);
+    try {
+      // Efficient base64 encoding (chunked, not char-by-char)
+      const audioBase64 = arrayBufferToBase64(await blob.arrayBuffer());
 
-    const res = await sendMsg<{
-      ok?: boolean;
-      status?: number;
-      transcript?: string;
-      configured?: boolean;
-      error?: string;
-    }>({
-      type: "voiceStt",
-      audioBase64,
-      language: assistantSettings.language === "indic-auto" ? "indic-auto" : assistantSettings.language,
-    });
+      const res = await sendMsg<{
+        ok?: boolean;
+        transcript?: string;
+        configured?: boolean;
+        error?: string;
+      }>({
+        type: "voiceStt",
+        audioBase64,
+        language: assistantSettings.language === "indic-auto" ? "indic-auto" : assistantSettings.language,
+      });
 
-    if (res?.ok && res.transcript) {
-      await handleTranscript(res.transcript, true);
-    } else {
-      say(res?.configured === false
-        ? "Gnani.ai isn't configured on your D-Vault server (see docs/GNANI_INTEGRATION.md)."
-        : (res?.error ?? "Voice provider error."), undefined, "err");
+      if (res?.ok && res.transcript) {
+        await handleTranscript(res.transcript, true);
+      } else {
+        say(res?.configured === false
+          ? "Gnani.ai isn't configured on your D-Vault server (see docs/GNANI_INTEGRATION.md)."
+          : (res?.error ?? "Voice provider error."), undefined, "err");
+        setState("error");
+      }
+    } catch (voiceErr) {
+      const msg = voiceErr instanceof Error ? voiceErr.message : String(voiceErr);
+      say(msg.includes("reloaded")
+        ? "Extension was reloaded — refresh this page and click D again."
+        : `Voice error: ${msg}`, undefined, "err");
       setState("error");
     }
   }
