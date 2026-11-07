@@ -225,12 +225,63 @@ export function DPanel() {
       };
     });
 
-    setReview(items);
-    setState("review");
-    const fillable2 = items.filter((i) => i.field.supported);
-    const mapped = fillable2.filter((i) => i.chosenKey);
-    const haveValues = mapped.filter((i) => i.value !== null);
-    say(`D found ${items.length} fields. ${haveValues.length} can be filled from your vault, ${mapped.length - haveValues.length} mapped but missing values, ${fillable2.length - mapped.length} need your input${unsupported.length ? `, ${unsupported.length} unsupported` : ""}. Review below.`, "FILL_ACTIVE_FORM");
+    // ── AUTO-FILL: no review panel, fill immediately ─────────────────────
+    // The user said "fill this form" — that IS the permission.
+    // Fill all high-confidence fields with vault values right away.
+    const autoFill = items.filter(
+      (i) => i.included && i.field.supported && i.chosenKey && i.value,
+    );
+
+    if (autoFill.length > 0) {
+      setState("filling");
+      const domMap = resolveDomElements(document, autoFill.map((r) => r.field));
+      let filled = 0;
+      let skipped = 0;
+
+      for (const item of autoFill) {
+        const el = domMap.get(item.field.id);
+        if (!el) { skipped++; continue; }
+        let value = item.value!;
+        if (item.field.type === "select" || item.field.type === "radio") {
+          const matched = matchSelectOption(item.field.options ?? [], value);
+          if (!matched) { skipped++; continue; }
+          value = matched;
+        }
+        const err = fillField(el, value, item.field.type);
+        if (err) skipped++; else filled++;
+      }
+
+      await logConsent("autofill_approved", {
+        filled, skipped,
+        fields: autoFill.map((i) => ({ id: i.field.id, key: i.chosenKey })),
+      });
+
+      const needInput = items.filter(
+        (i) => i.field.supported && (!i.chosenKey || !i.value) && i.field.type !== "checkbox",
+      ).length;
+
+      setFillSummary({ filled, skipped, unsupported });
+      setReview(null);
+      setState("done");
+      say(
+        `Filled ${filled} field${filled === 1 ? "" : "s"} automatically` +
+        (skipped ? `, ${skipped} couldn't be filled` : "") +
+        (needInput ? `. ${needInput} field${needInput === 1 ? "" : "s"} need your input` : "") +
+        `. Check the page and press Submit yourself — D never does that.`,
+        "FILL_ACTIVE_FORM",
+      );
+    } else {
+      // Nothing could be auto-filled — show the review panel as a fallback
+      // so the user can manually map fields
+      setReview(items);
+      setState("review");
+      const fillable2 = items.filter((i) => i.field.supported);
+      const mapped = fillable2.filter((i) => i.chosenKey);
+      say(
+        `Found ${items.length} fields but none could be auto-filled from your vault. ${mapped.length} mapped but no stored value. Select fields manually below.`,
+        "FILL_ACTIVE_FORM",
+      );
+    }
   }, [pairing, key, say]);
 
   async function approveFill() {
