@@ -41,6 +41,7 @@ chrome.action.onClicked.addListener(async (tab) => {
 type PanelMessage =
   | { type: "getState" }
   | { type: "apiFetch"; path: string; init?: RequestInit }
+  | { type: "voiceStt"; audioBase64: string; language: string }
   | { type: "captureVisibleTab" }
   | { type: "pair"; serverUrl: string; deviceName: string }
   | { type: "unpair" };
@@ -55,6 +56,37 @@ chrome.runtime.onMessage.addListener((msg: PanelMessage, _sender, sendResponse: 
             ? { serverUrl: pairing.serverUrl, user: pairing.user, profiles: pairing.profiles }
             : null,
         });
+        break;
+      }
+      case "voiceStt": {
+        // Audio arrives as base64 (FormData doesn't survive chrome.runtime.sendMessage).
+        // Reconstruct the FormData here in the service worker and send to the STT endpoint.
+        const pairing = await getPairing();
+        if (!pairing) {
+          sendResponse({ ok: false, error: "Not paired" });
+          break;
+        }
+        try {
+          // decode base64 → bytes
+          const binary = atob(msg.audioBase64);
+          const bytes = new Uint8Array(binary.length);
+          for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+          // construct FormData with the audio blob
+          const form = new FormData();
+          form.append("audio", new Blob([bytes], { type: "audio/wav" }), "command.wav");
+          form.append("language", msg.language || "en-IN");
+
+          const res = await fetch(`${pairing.serverUrl}/api/voice/stt`, {
+            method: "POST",
+            headers: { "X-DVault-Device-Token": pairing.deviceToken },
+            body: form,
+          });
+          const data = await res.json();
+          sendResponse({ ok: res.ok, ...data });
+        } catch (e) {
+          sendResponse({ ok: false, error: e instanceof Error ? e.message : "Voice request failed" });
+        }
         break;
       }
       case "apiFetch": {

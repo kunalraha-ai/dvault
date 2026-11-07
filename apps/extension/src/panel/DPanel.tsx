@@ -432,19 +432,33 @@ export function DPanel() {
       setState("idle");
       return;
     }
-    const form = new FormData();
-    form.append("audio", blob, "command.wav");
-    form.append("language", assistantSettings.language === "indic-auto" ? "indic-auto" : assistantSettings.language);
-    const res = await apiJson<{ transcript?: string; configured?: boolean; error?: string }>(
-      "/api/voice/stt",
-      { method: "POST", body: form },
-    );
-    if (res.ok && res.data?.transcript) {
-      await handleTranscript(res.data.transcript, true);
+
+    // FormData/Blobs DON'T survive chrome.runtime.sendMessage serialization.
+    // Convert the WAV blob to base64 and send it as a plain string.
+    const arrayBuf = await blob.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuf);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+    const audioBase64 = btoa(binary);
+
+    const res = await sendMsg<{
+      ok?: boolean;
+      status?: number;
+      transcript?: string;
+      configured?: boolean;
+      error?: string;
+    }>({
+      type: "voiceStt",
+      audioBase64,
+      language: assistantSettings.language === "indic-auto" ? "indic-auto" : assistantSettings.language,
+    });
+
+    if (res?.ok && res.transcript) {
+      await handleTranscript(res.transcript, true);
     } else {
-      say(res.data?.configured === false
+      say(res?.configured === false
         ? "Gnani.ai isn't configured on your D-Vault server (see docs/GNANI_INTEGRATION.md)."
-        : (res.error ?? "Voice provider error."), undefined, "err");
+        : (res?.error ?? "Voice provider error."), undefined, "err");
       setState("error");
     }
   }
