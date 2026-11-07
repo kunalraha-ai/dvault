@@ -361,41 +361,49 @@ export function DPanel() {
   async function confirmSaveApplication() {
     if (!saveFlow || !key) return;
     setSaveFlow({ ...saveFlow, busy: true });
-    const encRef = await encryptString(key, saveFlow.ref || "(none recorded)");
-    const meta = {
-      applicationName: saveFlow.name,
-      websiteDomain: location.host,
-      applicationUrl: location.href,
-      profileId: pairing?.profiles.find((p) => p.profileType === profileType)?.id ?? null,
-      encryptedReferenceId: encRef,
-      submissionDate: new Date().toISOString(),
-      status: "submitted" as const,
-    };
-    const form = new FormData();
-    form.append("meta", JSON.stringify(meta));
+    try {
+      const encRef = await encryptString(key, saveFlow.ref || "(none recorded)");
+      const meta = {
+        applicationName: saveFlow.name,
+        websiteDomain: location.host,
+        applicationUrl: location.href,
+        profileId: pairing?.profiles.find((p) => p.profileType === profileType)?.id ?? null,
+        encryptedReferenceId: encRef,
+        submissionDate: new Date().toISOString(),
+        status: "submitted" as const,
+      };
 
-    if (saveFlow.withShot) {
-      const shot = (await sendMsg<{ ok: boolean; dataUrl?: string; error?: string }>({ type: "captureVisibleTab" }));
-      if (shot.ok && shot.dataUrl) {
-        const bytes = Uint8Array.from(atob(shot.dataUrl.split(",")[1]), (c) => c.charCodeAt(0));
-        const enc = await encryptBytes(key, bytes);
-        const blob = new Blob([enc.c], { type: "application/octet-stream" });
-        form.append("screenshot", blob, "screenshot.enc");
-        await logConsent("screenshot_captured", { host: location.host });
-      } else {
-        say(`Screenshot wasn't captured (${shot.error ?? "permission"}). Saving without it.`, "SAVE_APPLICATION");
+      // Screenshot as base64 (Blob/FormData don't survive message passing)
+      let screenshotBase64: string | null = null;
+      if (saveFlow.withShot) {
+        const shot = (await sendMsg<{ ok: boolean; dataUrl?: string; error?: string }>({ type: "captureVisibleTab" }));
+        if (shot.ok && shot.dataUrl) {
+          const bytes = Uint8Array.from(atob(shot.dataUrl.split(",")[1]), (c) => c.charCodeAt(0));
+          const enc = await encryptBytes(key, bytes);
+          // Encode the encrypted envelope as base64 JSON
+          screenshotBase64 = btoa(JSON.stringify(enc));
+          await logConsent("screenshot_captured", { host: location.host });
+        } else {
+          say(`Screenshot wasn't captured (${shot.error ?? "permission"}). Saving without it.`, "SAVE_APPLICATION");
+        }
       }
-    }
 
-    const res = await apiJson<{ application: { id: string } }>(
-      "/api/extension/save-application",
-      { method: "POST", body: form },
-    );
-    setSaveFlow({ ...saveFlow, busy: false, done: res.ok });
-    if (res.ok) {
-      say(`Saved “${saveFlow.name}” to your application memory${saveFlow.withShot ? " with a screenshot" : ""}. Ask me later: “what was my ${saveFlow.name} reference number?”`, "SAVE_APPLICATION");
-    } else {
-      say(res.error ?? "Could not save the application.", "SAVE_APPLICATION", "err");
+      // Send via dedicated message type (not apiFetch — FormData doesn't survive)
+      const res = await sendMsg<{ ok?: boolean; application?: { id: string }; error?: string; }>({
+        type: "saveApplication",
+        meta: JSON.stringify(meta),
+        screenshotBase64,
+      });
+
+      setSaveFlow({ ...saveFlow, busy: false, done: res?.ok });
+      if (res?.ok) {
+        say(`Saved “${saveFlow.name}” to your application memory${saveFlow.withShot ? " with a screenshot" : ""}. Ask me later: “what was my ${saveFlow.name} reference number?”`, "SAVE_APPLICATION");
+      } else {
+        say(res?.error ?? "Could not save the application.", "SAVE_APPLICATION", "err");
+      }
+    } catch (saveErr) {
+      setSaveFlow({ ...saveFlow, busy: false, done: false });
+      say(saveErr instanceof Error ? saveErr.message : "Could not save.", "SAVE_APPLICATION", "err");
     }
   }
 

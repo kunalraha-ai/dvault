@@ -42,6 +42,7 @@ type PanelMessage =
   | { type: "getState" }
   | { type: "apiFetch"; path: string; init?: RequestInit }
   | { type: "voiceStt"; audioBase64: string; language: string }
+  | { type: "saveApplication"; meta: string; screenshotBase64: string | null }
   | { type: "captureVisibleTab" }
   | { type: "pair"; serverUrl: string; deviceName: string }
   | { type: "unpair" };
@@ -86,6 +87,38 @@ chrome.runtime.onMessage.addListener((msg: PanelMessage, _sender, sendResponse: 
           sendResponse({ ok: res.ok, ...data });
         } catch (e) {
           sendResponse({ ok: false, error: e instanceof Error ? e.message : "Voice request failed" });
+        }
+        break;
+      }
+      case "saveApplication": {
+        // Screenshot arrives as base64 (FormData doesn't survive message passing).
+        // Reconstruct the multipart form here in the service worker.
+        const pairing = await getPairing();
+        if (!pairing) {
+          sendResponse({ ok: false, error: "Not paired" });
+          break;
+        }
+        try {
+          const form = new FormData();
+          form.append("meta", msg.meta);
+
+          if (msg.screenshotBase64) {
+            // decode the encrypted envelope JSON
+            const encJson = atob(msg.screenshotBase64);
+            const encBytes = new TextEncoder().encode(encJson);
+            const blob = new Blob([encBytes], { type: "application/octet-stream" });
+            form.append("screenshot", blob, "screenshot.enc");
+          }
+
+          const res = await fetch(`${pairing.serverUrl}/api/extension/save-application`, {
+            method: "POST",
+            headers: { "X-DVault-Device-Token": pairing.deviceToken },
+            body: form,
+          });
+          const data = await res.json();
+          sendResponse({ ok: res.ok, ...data });
+        } catch (e) {
+          sendResponse({ ok: false, error: e instanceof Error ? e.message : "Save failed" });
         }
         break;
       }

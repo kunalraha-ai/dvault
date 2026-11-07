@@ -249,7 +249,17 @@ export default function DocumentsPage() {
               </p>
             </>
           )}
-          <input ref={inputRef} type="file" className="hidden" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt,.md" aria-hidden />
+          <input
+            ref={inputRef}
+            type="file"
+            className="hidden"
+            accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt,.md"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleFile(f);
+              e.target.value = "";
+            }}
+          />
         </div>
       </Card>
 
